@@ -1,6 +1,6 @@
 // Params: uid (or parent_comment), author, email, comment_text, timestamp, approval_uuid (default random uuid)
 var AWS = require("aws-sdk");
-var uuid = require('uuid/v4');
+const uuidv4 = require('uuid/v4');
 var xss = require('xss');
 
 AWS.config.update({
@@ -50,24 +50,26 @@ exports.handler = function(event,context,callback) {
     var approval_uuid = uuidv4();
     if(typeof body.parent_comment === 'undefined' || body.parent_comment === null) {
       var params = {
-        TableName: 'comments',
+        TableName: 'child_comments',
         Item: {
           'author': body.author,
           'text': body.comment_text,
           'timestamp': body.timestamp,
           'approval_uuid': approval_uuid,
-          'parent': body.parent_comment
+          'parent': body.parent_comment,
+          'id': uuidv4()
         }
       };
     } else {
       var params = {
-        TableName: 'comments',
+        TableName: 'root_comments',
         Item: {
           'author': body.author,
           'text': body.comment_text,
           'timestamp': body.timestamp,
           'approval_uuid': approval_uuid,
-          'uid': body.uid
+          'uid': body.uid,
+          'id': uuidv4()
         }
       };
     }
@@ -104,7 +106,7 @@ function sendEmail(body, done) {
     Message: {
       Body: {
         Text: {
-          Data: 'Your comment on ajl.io requires email verification before appearing on the website. Use the following link: https://comments.ajl.io/approve?uid=' + approval_uuid,
+          Data: 'Your comment on ajl.io requires email verification before appearing on the website. Use the following link: https://comments.ajl.io/approve?type=' + (body.parent_comment.length() > 0 ? 'child' :'root') + '&uid=' + approval_uuid,
           Charset: 'UTF-8'
         }
       },

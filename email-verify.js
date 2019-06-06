@@ -9,7 +9,7 @@ exports.handler = function(event,context,callback) {
   var dynamoClient = new AWS.DynamoDB.DocumentClient()
   
   var params = {
-    TableName: 'comments',
+    TableName: event.queryStringParameters.type + '_comments',
     Key: {
       'approved': event.queryStringParameters.uid
     },
