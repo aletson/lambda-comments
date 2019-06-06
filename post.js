@@ -111,7 +111,7 @@ function sendEmail(body, done) {
         }
       },
       Subject: {
-        Data: 'Approve Comment - ajl.io'
+        Data: 'Approve Comment - ajl.io',
         Charset: 'UTF-8'
       }
     },

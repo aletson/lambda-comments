@@ -1,8 +1,3 @@
-//query comments by approval guid
-//update approval guid 
-
-//no cors this is coming from an email!
-
 var AWS = require('aws-sdk');
 
 exports.handler = function(event,context,callback) {
