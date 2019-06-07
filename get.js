@@ -31,8 +31,8 @@ exports.handler = function(event,context,callback) {
     var dynamoClient = new AWS.DynamoDB.DocumentClient();
     
     var params = {
-	  TableName: "root_comments",
-	  KeyConditionExpression: "uid = :uid",
+	  TableName: "comments",
+	  KeyConditionExpression: "post_uid = :uid and begins_with(sortKey, :uid) ",
     ScanIndexForward: false,
 	  ExpressionAttributeValues: {
 	      ":uid": event.queryStringParameters.uid
@@ -49,10 +49,11 @@ exports.handler = function(event,context,callback) {
           if (comment.approval_uuid == '') {
 	    	    comments.rootComments[] = comment;
             var params = {
-              TableName: "child_comments",
-              KeyConditionExpression: "parent = :parent",
+              TableName: "comments",
+              KeyConditionExpression: "post_uid = :uid and begins_with(sortKey, :parent)",
               ExpressionAttributeValues: {
-                ":parent": comment.id
+                ":parent": comment.id,
+		":uid": event.queryStringParameters.uid
               },
               ScanIndexForward: true
             }
