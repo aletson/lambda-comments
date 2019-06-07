@@ -110,7 +110,7 @@ function sendEmail(body, done) {
     Message: {
       Body: {
         Text: {
-          Data: 'Your comment on ajl.io requires email verification before appearing on the website. Use the following link: https://comments.ajl.io/approve?type=' + (body.parent_comment.length() > 0 ? 'child' :'root') + '&uid=' + approval_uuid,
+          Data: 'Your comment on ajl.io requires email verification before appearing on the website. Use the following link: https://comments.ajl.io/approve?uid=' + approval_uuid,
           Charset: 'UTF-8'
         }
       },
