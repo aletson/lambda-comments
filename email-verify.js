@@ -20,7 +20,7 @@ exports.handler = function(event,context,callback) {
     } else {
       var response = {
         "isBase64Encoded": false,
-        "headers": {"Content-Type": "text/html"}, //This is a totally unnecessary ternary
+        "headers": {"Content-Type": "text/html"},
         "statusCode": 200,
         "body": '<html><head><title>Comment Approved - ajl.io</title></head><body>Approval successful! This window can now be closed.</body></html>;'
 	    };

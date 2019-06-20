@@ -53,7 +53,7 @@ exports.handler = function(event,context,callback) {
               KeyConditionExpression: "post_uid = :uid and begins_with(sortKey, :parent)",
               ExpressionAttributeValues: {
                 ":parent": comment.id,
-		":uid": event.queryStringParameters.uid
+               	":uid": event.queryStringParameters.uid
               },
               ScanIndexForward: true
             }
@@ -73,9 +73,9 @@ exports.handler = function(event,context,callback) {
 	      //...and return a JSON object
         var response = {
           "isBase64Encoded": false,
-          "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": goodOrigin ? origin : allowedOrigins[0] }, //This is a totally unnecessary ternary
+          "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": origin},
           "statusCode": 200,
-          "body": JSON.stringify(comments);
+          "body": JSON.stringify(comments)
 	      };
         callback(err, response);
       }

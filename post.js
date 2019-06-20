@@ -27,15 +27,14 @@ exports.handler = function(event,context,callback) {
   }
   if(goodOrigin) {
     var body = JSON.parse(event.body);
-    // Check w Akismet - https://www.npmjs.com/package/akismet
-    //Meh? This is only necessary if I'm not doing hilarious SES verification things
-
     // Sanitize - https://jsxss.com/en/examples/no_tag.html
     body.text = xss(body.text, {
       whiteList: {
         u: [],
         em: [],
         strong: [],
+        i: [],
+        b: [],
         pre: [],
         code: [],
         kbd: [],
@@ -85,7 +84,7 @@ exports.handler = function(event,context,callback) {
         sendEmail(body, function(err, data) {
           var response = {
             "isBase64Encoded": false,
-            "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": goodOrigin ? origin : allowedOrigins[0] },
+            "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": origin },
             "statusCode": 200,
             "body": "{\"result\": \"Success\"}"
           }; // This will get processed from the client end to display message "hey buddy, check your email to approve this comment"
