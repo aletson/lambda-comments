@@ -13,6 +13,8 @@ const allowedOrigins = [
     "https?://[a-z]*.?ajl.io",
 ];
 
+var from = "comments@ajl.io";
+
 
 exports.handler = function(event,context,callback) {
   const origin = event.headers.Origin || event.headers.origin;
@@ -58,7 +60,6 @@ exports.handler = function(event,context,callback) {
           'approval_uuid': approval_uuid,
           'post_uid': body.uid,
           'id': comment_id,
-          'parent': body.parent_comment
           'sortKey': body.parent_comment + '#' + body.timestamp + '#' + comment_id
         }
       };
@@ -72,6 +73,7 @@ exports.handler = function(event,context,callback) {
           'approval_uuid': approval_uuid,
           'post_uid': body.uid,
           'id': comment_id,
+          'parent': body.parent_comment,
           'sortKey': body.uid + '#' + body.timestamp + '#' + comment_id
         }
       };
@@ -81,7 +83,7 @@ exports.handler = function(event,context,callback) {
         console.log('Error: ', err);
       } else {
         //send email
-        sendEmail(body, function(err, data) {
+        sendEmail(approval_uuid, body.email, function(err, data) {
           var response = {
             "isBase64Encoded": false,
             "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": origin },
@@ -98,12 +100,12 @@ exports.handler = function(event,context,callback) {
 
 
 
-function sendEmail(body, done) {
+function sendEmail(approval_uuid, email, done) {
   var ses = new AWS.SES();
   var params = {
     Destination: {
       ToAddresses: [
-        body.email
+        email
       ]
     },
     Message: {
@@ -119,6 +121,6 @@ function sendEmail(body, done) {
       }
     },
     Source: from
-  }
-  ses.sendEmail(params, done)
-};
+  };
+  ses.sendEmail(params, done);
+}
