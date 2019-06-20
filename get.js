@@ -44,10 +44,11 @@ exports.handler = function(event,context,callback) {
 	      console.log("Error on parent");
 	    } else {
         var comments = {};
+        comments.rootComments = [];
         //data is in data.Items, parse it...
         data.Items.forEach(function(comment) {
           if (comment.approval_uuid == '') {
-	    	    comments.rootComments[] = comment;
+	    	    comments.rootComments.push(comment);
             var params = {
               TableName: "comments",
               KeyConditionExpression: "post_uid = :uid and begins_with(sortKey, :parent)",
