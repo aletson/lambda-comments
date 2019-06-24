@@ -45,6 +45,7 @@ exports.handler = function(event,context,callback) {
       stripIgnoreTag: true,
       stripIgnoreTagBody: ['script']
     });
+    body.author = xss(body.author, {stripIgnoreTagBody: true});
 
     // DynamoDB
     var dynamoClient = new AWS.DynamoDB.DocumentClient();
