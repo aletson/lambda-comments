@@ -42,6 +42,7 @@ exports.handler = function(event,context,callback) {
     dynamoClient.query(params, function(err, data) {
 	    if (err) {
 	      console.log("Error on parent");
+        console.log(err);
 	    } else {
         var comments = {};
         comments.rootComments = [];
@@ -61,6 +62,7 @@ exports.handler = function(event,context,callback) {
             dynamoClient.query(params, function(err, children) {
               if(err) {
                 console.log("Error on children");
+                console.log(err);
               } else {
                 children.Items.forEach(function(child) {
                   if(child.approval_uuid == '') {
