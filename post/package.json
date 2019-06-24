@@ -1,0 +1,8 @@
+{
+	"name": "lambda-post",
+	"main": "post.js",
+	"dependencies": {
+		"xss": "^1.0.6",
+		"uuid": "^3.3.2"
+	}
+}
