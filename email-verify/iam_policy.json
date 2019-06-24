@@ -19,7 +19,8 @@
             ],
             "Resource": [
                 "arn:aws:dynamodb:REGION:ACCOUNT:table/comments",
-                "arn:aws:logs:REGION:ACCOUNT:log-group:/aws/lambda/comments-email-verify:*"
+                "arn:aws:logs:REGION:ACCOUNT:log-group:/aws/lambda/comments-email-verify:*",
+                "arn:aws:dynamodb:REGION:ACCOUNT:table/comments/index/approval_uuid-index"
             ]
         },
         {
