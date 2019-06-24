@@ -43,7 +43,7 @@ exports.handler = function(event,context,callback) {
         a: ['href', 'title']
       },
       stripIgnoreTag: true,
-      stripIgnoreTagBody: ['script']
+      stripIgnoreTagBody: ['script', 'style']
     });
     body.author = xss(body.author, {stripIgnoreTagBody: true});
 
