@@ -44,11 +44,12 @@ exports.handler = function(event,context,callback) {
 	      console.log("Error on parent");
         console.log(err);
 	    } else {
+        console.log(data);
         var comments = {};
         comments.rootComments = [];
         //data is in data.Items, parse it...
         data.Items.forEach(function(comment) {
-          if (comment.approval_uuid == '') {
+          if (typeof comment.approval_uuid === "undefined" ) {
 	    	    comments.rootComments.push(comment);
             var params = {
               TableName: "comments",
@@ -65,7 +66,7 @@ exports.handler = function(event,context,callback) {
                 console.log(err);
               } else {
                 children.Items.forEach(function(child) {
-                  if(child.approval_uuid == '') {
+                  if (typeof comment.approval_uuid === "undefined" ) {
                     comments.childComments[comment.uid] = child;
                   }
                 });

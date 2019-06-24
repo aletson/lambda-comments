@@ -6,13 +6,10 @@ exports.handler = function(event,context,callback) {
   var params = {
     TableName: 'comments',
     Key: {
-      'approved': event.queryStringParameters.uid
+      'approval_uuid': event.queryStringParameters.uid
     },
-    UpdateExpression: "set approved = :a",
-    ExpressionAttributeValues:{
-      ":a": ''
-    }, 
-    ReturnValues: "UPDATED_NEW"
+    UpdateExpression: "remove approval_uuid",
+    ReturnValues: "ALL_NEW"
   };
   dynamoClient.update(params, function(err, data) {
     if (err) {
