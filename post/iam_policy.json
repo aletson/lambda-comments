@@ -33,6 +33,12 @@
             "Effect": "Allow",
             "Action": "logs:CreateLogGroup",
             "Resource": "arn:aws:logs:REGION:ACCOUNT:*"
+        },
+        {
+            "Sid": "VisualEditor3",
+            "Effect": "Allow",
+            "Action": "ses:SendEmail",
+            "Resource": "arn:aws:ses:REGION:ACCOUNT:identity/DOMAIN"
         }
     ]
 }

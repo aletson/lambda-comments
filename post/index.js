@@ -61,7 +61,7 @@ exports.handler = function(event,context,callback) {
           'approval_uuid': approval_uuid,
           'post_uid': body.uid,
           'id': comment_id,
-          'sortKey': body.parent_comment + '#' + body.timestamp + '#' + comment_id
+          'sortKey': body.uid + '#' + body.timestamp + '#' + comment_id
         }
       };
     } else {
@@ -75,7 +75,7 @@ exports.handler = function(event,context,callback) {
           'post_uid': body.uid,
           'id': comment_id,
           'parent': body.parent_comment,
-          'sortKey': body.uid + '#' + body.timestamp + '#' + comment_id
+          'sortKey': body.parent_comment + '#' + body.timestamp + '#' + comment_id
         }
       };
     }
