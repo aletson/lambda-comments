@@ -42,10 +42,10 @@ exports.handler = async (event,context) => {
 	    }
     };
     var rootComments = await retrieveComments(params);
+    var childComments = [];
     await asyncForEach(rootComments, async(comment) => {
       if(typeof comment.approval_uuid === "undefined") {
-        comments.rootComments.push(comment);
-        comments.childComments[comment.id] = [];
+        comment.children = [];
       
         var params = {
           TableName: "comments",
@@ -56,21 +56,24 @@ exports.handler = async (event,context) => {
           },
           ScanIndexForward: true
         };
-        var childComments = await retrieveComments(params);
-        await asyncForEach(childComments, async (child) => {
+        childComments[comment.id] = await retrieveComments(params);
+        await asyncForEach(childComments[comment.id], async (child) => {
           if(typeof child.approval_uuid === "undefined") {
-            comments.childComments[comment.id].push(child);
+            comment.children.push(child);
           }
         });
+        comments.rootComments.push(comment);
       }
     });
   }
-  return {
+  var response = {
           "isBase64Encoded": false,
           "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": origin},
           "statusCode": 200,
           "body": JSON.stringify(comments)
   };
+  console.log(response);
+  return response;
 };
     
 async function retrieveComments(params) {
