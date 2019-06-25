@@ -15,8 +15,9 @@ const allowedOrigins = [
     "https://ajl.io",
     "https?://[a-z]*.?ajl.io",
 ];
+const dynamoClient = new AWS.DynamoDB.DocumentClient();
 
-exports.handler = function(event,context,callback) {
+exports.handler = async (event,context) => {
   const origin = event.headers.Origin || event.headers.origin;
   var goodOrigin = false;
 
@@ -28,61 +29,61 @@ exports.handler = function(event,context,callback) {
     });
   }
   if(goodOrigin) {
-    var dynamoClient = new AWS.DynamoDB.DocumentClient();
+    var comments = {};
+    comments.rootComments = [];
+    comments.childComments = [];
     
     var params = {
-	  TableName: "comments",
-	  KeyConditionExpression: "post_uid = :uid and begins_with(sortKey, :uid) ",
-    ScanIndexForward: false,
-	  ExpressionAttributeValues: {
+	    TableName: "comments",
+	    KeyConditionExpression: "post_uid = :uid and begins_with(sortKey, :uid) ",
+      ScanIndexForward: false,
+	    ExpressionAttributeValues: {
 	      ":uid": event.queryStringParameters.uid
-	  }
+	    }
     };
-    
-    dynamoClient.query(params, function(err, data) {
-	    if (err) {
-	      console.log("Error on parent");
-        console.log(err);
-	    } else {
-        console.log(data);
-        var comments = {};
-        comments.rootComments = [];
-        //data is in data.Items, parse it...
-        data.Items.forEach(function(comment) {
-          if (typeof comment.approval_uuid === "undefined" ) {
-	    	    comments.rootComments.push(comment);
-            var params = {
-              TableName: "comments",
-              KeyConditionExpression: "post_uid = :uid and begins_with(sortKey, :parent)",
-              ExpressionAttributeValues: {
-                ":parent": comment.id,
-               	":uid": event.queryStringParameters.uid
-              },
-              ScanIndexForward: true
-            }
-            dynamoClient.query(params, function(err, children) {
-              if(err) {
-                console.log("Error on children");
-                console.log(err);
-              } else {
-                children.Items.forEach(function(child) {
-                  if (typeof comment.approval_uuid === "undefined" ) {
-                    comments.childComments[comment.uid] = child;
-                  }
-                });
-              }
-            });
+    var rootComments = await retrieveComments(params);
+    await asyncForEach(rootComments, async(comment) => {
+      if(typeof comment.approval_uuid === "undefined") {
+        comments.rootComments.push(comment);
+        comments.childComments[comment.id] = [];
+      
+        var params = {
+          TableName: "comments",
+          KeyConditionExpression: "post_uid = :uid and begins_with(sortKey, :parent)",
+          ExpressionAttributeValues: {
+            ":parent": comment.id,
+           	":uid": event.queryStringParameters.uid
+          },
+          ScanIndexForward: true
+        };
+        var childComments = await retrieveComments(params);
+        await asyncForEach(childComments, async (child) => {
+          if(typeof child.approval_uuid === "undefined") {
+            comments.childComments[comment.id].push(child);
           }
         });
-	      //...and return a JSON object
-        var response = {
+      }
+    });
+  }
+  return {
           "isBase64Encoded": false,
           "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": origin},
           "statusCode": 200,
           "body": JSON.stringify(comments)
-	      };
-        callback(err, response);
-      }
-    });
-  } //no else: 502 if bad origin
+  };
 };
+    
+async function retrieveComments(params) {
+  try {
+    let data = await dynamoClient.query(params).promise();
+    return data.Items;
+  } catch(err) {
+    console.log(err);
+  }
+}
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
