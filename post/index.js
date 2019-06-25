@@ -41,12 +41,11 @@ exports.handler = function(event,context,callback) {
         pre: [],
         code: [],
         kbd: [],
-        a: ['href', 'title'],
-        br: []
+        a: ['href', 'title']
       },
       stripIgnoreTag: true,
       stripIgnoreTagBody: ['script', 'style']
-    }).substring(0,1000).replace(/\r?\n/g, '<br/>');
+    }).substring(0,1000).replace(/(\n\s*){2,}/g, '<br/></br>');
     body.author = xss(body.author, {stripIgnoreTagBody: true}).substring(0,20);
 
     // DynamoDB
