@@ -46,8 +46,8 @@ exports.handler = function(event,context,callback) {
       },
       stripIgnoreTag: true,
       stripIgnoreTagBody: ['script', 'style']
-    }).replace(/\r?\n/g, '<br/>');
-    body.author = xss(body.author, {stripIgnoreTagBody: true});
+    }).substring(0,1000).replace(/\r?\n/g, '<br/>');
+    body.author = xss(body.author, {stripIgnoreTagBody: true}).substring(0,20);
 
     // DynamoDB
     var dynamoClient = new AWS.DynamoDB.DocumentClient();
@@ -86,7 +86,7 @@ exports.handler = function(event,context,callback) {
         console.log('Error: ', err);
       } else {
         //send email
-        sendEmail(comment_id, approval_uuid, body.email, function(err, data) {
+        sendEmail(approval_uuid, body.email, function(err, data) {
           var response = {
             "isBase64Encoded": false,
             "headers": { "Content-Type": "application/json", "Access-Control-Allow-Origin": origin },
@@ -103,7 +103,7 @@ exports.handler = function(event,context,callback) {
 
 
 
-function sendEmail(comment_id, approval_uuid, email, done) {
+function sendEmail(approval_uuid, email, done) {
   var ses = new AWS.SES();
   var params = {
     Destination: {
@@ -114,7 +114,7 @@ function sendEmail(comment_id, approval_uuid, email, done) {
     Message: {
       Body: {
         Text: {
-          Data: 'Your comment on ajl.io requires email verification before appearing on the website. Use the following link: https://comments.ajl.io/approve?comment=' + comment_id + '&uid=' + approval_uuid,
+          Data: 'Your comment on ajl.io requires email verification before appearing on the website. Use the following link: https://comments.ajl.io/approve?uid=' + approval_uuid,
           Charset: 'UTF-8'
         }
       },
