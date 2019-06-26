@@ -52,17 +52,18 @@ exports.handler = function(event,context,callback) {
     var dynamoClient = new AWS.DynamoDB.DocumentClient();
     var approval_uuid = uuidv4();
     var comment_id = uuidv4();
+    var ts = Date.now();
     if(typeof body.parent_comment === 'undefined' || body.parent_comment === null) {
       var params = {
         TableName: 'comments',
         Item: {
           'author': body.author,
           'text': body.comment_text,
-          'ts': body.timestamp,
+          'ts': ts,
           'approval_uuid': approval_uuid,
           'post_uid': body.uid,
           'id': comment_id,
-          'sortKey': body.uid + '#' + body.timestamp + '#' + comment_id
+          'sortKey': body.uid + '#' + ts + '#' + comment_id
         }
       };
     } else {
@@ -71,12 +72,12 @@ exports.handler = function(event,context,callback) {
         Item: {
           'author': body.author,
           'text': body.comment_text,
-          'ts': body.timestamp,
+          'ts': ts,
           'approval_uuid': approval_uuid,
           'post_uid': body.uid,
           'id': comment_id,
           'parent': body.parent_comment,
-          'sortKey': body.parent_comment + '#' + body.timestamp + '#' + comment_id
+          'sortKey': body.parent_comment + '#' + ts + '#' + comment_id
         }
       };
     }
