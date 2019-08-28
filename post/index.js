@@ -50,7 +50,7 @@ exports.handler = function(event,context,callback) {
 
     // DynamoDB
     var dynamoClient = new AWS.DynamoDB.DocumentClient();
-    var approval_uuid = uuidv4();
+    var approval_uuid = uuidv4(); // or hash with a secret value & email & comment id? who knows who cares
     var comment_id = uuidv4();
     var ts = Date.now();
     if(typeof body.parent_comment === 'undefined' || body.parent_comment === null) {
